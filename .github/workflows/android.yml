@@ -10,6 +10,10 @@ on:
 permissions:
   contents: read
 
+env:
+  ANDROID_HOME: /usr/local/lib/android/sdk
+  ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+
 jobs:
   build-debug-apk:
     name: Build Android APK
@@ -29,11 +33,15 @@ jobs:
         with:
           gradle-version: '9.6.0'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Accept Android SDK licenses
+        shell: bash
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null
 
       - name: Install Android 16 SDK
-        run: sdkmanager --install "platforms;android-36" "build-tools;36.0.0"
+        shell: bash
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "platforms;android-36" "build-tools;36.0.0" "platform-tools"
 
       - name: Build debug APK
         run: gradle --no-daemon --stacktrace :app:assembleDebug
