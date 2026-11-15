@@ -335,7 +335,7 @@ public final class FantasyGameView extends View {
         RectF card=overlay(c,"PLECAK I ZDOBYCZE");
         float x=card.left+30*d,y=card.top+104*d;
         text(c,"✦  ESENCJE: "+g.essences+" / 12",x,y,17*d,GOLD,true,Paint.Align.LEFT);
-        text(c,"DOŚWIADCZENIE: "+g.playerXp+" XP",x,y+42*d,15*d,WHITE,false,Paint.Align.LEFT);
+        text(c,"DOŚWIADCZENIE: "+g.xp+" XP",x,y+42*d,15*d,WHITE,false,Paint.Align.LEFT);
         text(c,"POZIOM ODKRYWCY: "+g.level(),x,y+77*d,15*d,WHITE,false,Paint.Align.LEFT);
         y+=125*d;
         for(int i=0;i<4;i++){
@@ -373,21 +373,21 @@ public final class FantasyGameView extends View {
     private void interact() {
         float x=g.playerX,y=g.playerY;
         if(!g.talkedToGuide && dist(x,y,2600,1765)<190){
-            g.talkedToGuide=true;g.playerXp+=15;notify("Auri: Odnajdź trzy znaki w każdej krainie i obudź jej ołtarz.");save();return;
+            g.talkedToGuide=true;g.xp+=15;notify("Auri: Odnajdź trzy znaki w każdej krainie i obudź jej ołtarz.");save();return;
         }
         for(int i=0;i<4;i++)for(int t=0;t<3;t++){
             if(!g.tasks[i][t] && dist(x,y,TX[i][t],TY[i][t])<155){
-                g.tasks[i][t]=true;g.essences++;g.playerXp+=25;notify("Znak światła odnaleziony. +25 XP");save();return;
+                g.tasks[i][t]=true;g.essences++;g.xp+=25;notify("Znak światła odnaleziony. +25 XP");save();return;
             }
         }
         for(int i=0;i<4;i++){
             if(g.taskCount(i)==3&&!g.seals[i]&&dist(x,y,RX[i],RY[i])<175){
-                g.seals[i]=true;g.playerXp+=100;notify("Odbudowano pieczęć: "+RN[i]);save();return;
+                g.seals[i]=true;g.xp+=100;notify("Odbudowano pieczęć: "+RN[i]);save();return;
             }
         }
         if(dist(x,y,SX,SY)<205){
             if(g.sealCount()==4){
-                if(!g.completed){g.completed=true;g.playerXp+=250;notify("Portal otwarty! Przywrócono równowagę świata.");}
+                if(!g.completed){g.completed=true;g.xp+=250;notify("Portal otwarty! Przywrócono równowagę świata.");}
                 else notify("Nexus jest bezpieczny. Odkrywaj dalej.");
             } else notify("Portal wymaga czterech pieczęci. Odbuduj ołtarze wszystkich krain.");
             save();return;
