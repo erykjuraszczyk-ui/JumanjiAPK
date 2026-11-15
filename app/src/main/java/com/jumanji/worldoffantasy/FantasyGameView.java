@@ -73,9 +73,9 @@ public final class FantasyGameView extends View {
         float len=(float)Math.sqrt(mx*mx+my*my);
         if(len<.02f)return;
         float speed=420+g.level()*7;
-        float nx=clamp(g.x+mx/Math.max(1,len)*speed*dt,0,W);
-        float ny=clamp(g.y+my/Math.max(1,len)*speed*dt,0,H);
-        if(walkable(nx,ny)){g.x=nx;g.y=ny;}
+        float nx=clamp(g.playerX+mx/Math.max(1,len)*speed*dt,0,W);
+        float ny=clamp(g.playerY+my/Math.max(1,len)*speed*dt,0,H);
+        if(walkable(nx,ny)){g.playerX=nx;g.playerY=ny;}
     }
 
     private boolean walkable(float x,float y) {
@@ -91,7 +91,7 @@ public final class FantasyGameView extends View {
         float vw=getWidth(),vh=getHeight();
         scale=clamp(Math.min(vw/1450f,vh/700f),.36f,.56f);
         float hx=vw/(2*scale),hy=vh/(2*scale);
-        float camX=clamp(g.x,hx,W-hx),camY=clamp(g.y,hy,H-hy);
+        float camX=clamp(g.playerX,hx,W-hx),camY=clamp(g.playerY,hy,H-hy);
         c.drawColor(INK);
         c.save();
         c.translate(vw/2-camX*scale,vh/2-camY*scale);
@@ -118,7 +118,7 @@ public final class FantasyGameView extends View {
             shrine(c,RX[i],RY[i],RC[i],g.seals[i]);
             for(int t=0;t<3;t++) rune(c,TX[i][t],TY[i][t],g.tasks[i][t],RC[i]);
         }
-        nexus(c); skyGate(c); guide(c); hero(c,g.x,g.y);
+        nexus(c); skyGate(c); guide(c); hero(c,g.playerX,g.playerY);
     }
 
     private void island(Canvas c,float x,float y,float r,int base,int rim) {
@@ -312,7 +312,7 @@ public final class FantasyGameView extends View {
         for(int i=0;i<4;i++)mapDot(c,ox+RX[i]*s,oy+RY[i]*s,Math.max(5*d,620*s),g.seals[i]?0xff72dcb7:RC[i]);
         mapDot(c,ox+CX*s,oy+CY*s,Math.max(5*d,360*s),0xffd0a75d);
         mapDot(c,ox+SX*s,oy+SY*s,Math.max(5*d,230*s),0xff75bce5);
-        fill(0xfffff0a6);c.drawCircle(ox+g.x*s,oy+g.y*s,7*d,p);
+        fill(0xfffff0a6);c.drawCircle(ox+g.playerX*s,oy+g.playerY*s,7*d,p);
     }
 
     private void mapDot(Canvas c,float x,float y,float r,int color){fill(color);c.drawCircle(x,y,r,p);stroke(0xffffe4a5,2*d);c.drawCircle(x,y,r,p);}
@@ -335,7 +335,7 @@ public final class FantasyGameView extends View {
         RectF card=overlay(c,"PLECAK I ZDOBYCZE");
         float x=card.left+30*d,y=card.top+104*d;
         text(c,"✦  ESENCJE: "+g.essences+" / 12",x,y,17*d,GOLD,true,Paint.Align.LEFT);
-        text(c,"DOŚWIADCZENIE: "+g.xp+" XP",x,y+42*d,15*d,WHITE,false,Paint.Align.LEFT);
+        text(c,"DOŚWIADCZENIE: "+g.playerXp+" XP",x,y+42*d,15*d,WHITE,false,Paint.Align.LEFT);
         text(c,"POZIOM ODKRYWCY: "+g.level(),x,y+77*d,15*d,WHITE,false,Paint.Align.LEFT);
         y+=125*d;
         for(int i=0;i<4;i++){
@@ -371,23 +371,23 @@ public final class FantasyGameView extends View {
     }
 
     private void interact() {
-        float x=g.x,y=g.y;
+        float x=g.playerX,y=g.playerY;
         if(!g.talkedToGuide && dist(x,y,2600,1765)<190){
-            g.talkedToGuide=true;g.xp+=15;notify("Auri: Odnajdź trzy znaki w każdej krainie i obudź jej ołtarz.");save();return;
+            g.talkedToGuide=true;g.playerXp+=15;notify("Auri: Odnajdź trzy znaki w każdej krainie i obudź jej ołtarz.");save();return;
         }
         for(int i=0;i<4;i++)for(int t=0;t<3;t++){
             if(!g.tasks[i][t] && dist(x,y,TX[i][t],TY[i][t])<155){
-                g.tasks[i][t]=true;g.essences++;g.xp+=25;notify("Znak światła odnaleziony. +25 XP");save();return;
+                g.tasks[i][t]=true;g.essences++;g.playerXp+=25;notify("Znak światła odnaleziony. +25 XP");save();return;
             }
         }
         for(int i=0;i<4;i++){
             if(g.taskCount(i)==3&&!g.seals[i]&&dist(x,y,RX[i],RY[i])<175){
-                g.seals[i]=true;g.xp+=100;notify("Odbudowano pieczęć: "+RN[i]);save();return;
+                g.seals[i]=true;g.playerXp+=100;notify("Odbudowano pieczęć: "+RN[i]);save();return;
             }
         }
         if(dist(x,y,SX,SY)<205){
             if(g.sealCount()==4){
-                if(!g.completed){g.completed=true;g.xp+=250;notify("Portal otwarty! Przywrócono równowagę świata.");}
+                if(!g.completed){g.completed=true;g.playerXp+=250;notify("Portal otwarty! Przywrócono równowagę świata.");}
                 else notify("Nexus jest bezpieczny. Odkrywaj dalej.");
             } else notify("Portal wymaga czterech pieczęci. Odbuduj ołtarze wszystkich krain.");
             save();return;
